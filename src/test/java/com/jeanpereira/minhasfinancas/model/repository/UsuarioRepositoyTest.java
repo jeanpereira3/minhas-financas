@@ -25,7 +25,7 @@ class UsuarioRepositoyTest {
 	
 	@BeforeEach
 	@AfterEach
-	public void after() {
+	public void setUp() {
 		repository.deleteAll();
 	}
 	

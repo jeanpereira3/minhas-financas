@@ -30,7 +30,7 @@ class UsuarioServiceTest {
 	
 	@AfterEach
 	@BeforeEach
-	public void before() {
+	private void setUp() {
 		repository.deleteAll();
 	}
 
