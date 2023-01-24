@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.jeanpereira.minhasfinancas.exeption.RegraDeNegocioExeption;
 import com.jeanpereira.minhasfinancas.model.entity.Lancamento;
 import com.jeanpereira.minhasfinancas.model.entity.Usuario;
 import com.jeanpereira.minhasfinancas.model.enums.StatusLancamento;
@@ -166,6 +167,108 @@ class LancamentoServiceTest {
 		
 		Assertions.assertThat(lancamentoAtualizado.get().getStatus())
 			.isEqualTo(StatusLancamento.CANCELADO);
+	}
+	
+	@Test
+	public void develancarErrosAoValidarLancamento() {
+		Lancamento lancamento = new Lancamento();
+		Usuario usuario = criarUsuario();
+		
+		Throwable erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe uma Descrição válida.");
+		
+		lancamento.setDescricao("");
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe uma Descrição válida.");
+		
+		lancamento.setDescricao("Descricao teste validação.");
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Mês válido.");
+		
+		lancamento.setMes(0);
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Mês válido.");
+		
+		lancamento.setMes(13);
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Mês válido.");
+		
+		lancamento.setMes(12);
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Ano válido");
+		
+		lancamento.setAno(999);
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Ano válido");
+		
+		lancamento.setAno(20222);
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Ano válido");
+		
+		lancamento.setAno(2022);
+		
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Usuário.");
+		
+		lancamento.setUsuario(usuario);
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Usuário.");
+		usuario.setId(1l);
+		lancamento.setUsuario(usuario);
+		
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Valor válido");
+		
+		lancamento.setValor(BigDecimal.valueOf(0));
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Valor válido");
+		
+		lancamento.setValor(BigDecimal.valueOf(300));
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro)
+			.isInstanceOf(RegraDeNegocioExeption.class)
+			.hasMessage("Informe um Tipo de lancamento.");
+		
+		lancamento.setTipo(TipoLancamento.RECEITA);
+		
+		erro = Assertions.catchThrowable(()-> lancamentoService.validar(lancamento));
+		Assertions.assertThat(erro).isNull();;
 	}
 	
 	private Lancamento criarLancamento(Usuario usuario) {
