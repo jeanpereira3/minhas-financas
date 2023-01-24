@@ -104,6 +104,37 @@ class LancamentoServiceTest {
 		Assertions.catchThrowableOfType(() -> lancamentoService.salvar(lancamento), NullPointerException.class);	
 	}
 	
+	@Test
+	public void deveDeletarUnLancamento() {
+		Usuario usuarioASalvar = criarUsuario();
+		Usuario usuario = usuarioService.salvarUsuario(usuarioASalvar);
+		
+		Lancamento lancamentoASalvar = criarLancamento(usuario);
+		Lancamento lancamentoSalvo = lancamentoService.salvar(lancamentoASalvar);
+		
+		lancamentoService.deletar(lancamentoSalvo);
+		
+		Optional<Lancamento> lancamentoDeletado = lancamentoService.obterPorId(lancamentoSalvo.getId());
+		
+		Assertions.assertThat(lancamentoDeletado).isEmpty();
+		
+		
+	}
+	
+	@Test
+	public void naoDeveDeletarUnLancamentoInexistente() {
+		Usuario usuarioASalvar = criarUsuario();
+		
+		Lancamento lancamentoASalvar = criarLancamento(usuarioASalvar);
+		
+		Assertions.catchThrowableOfType(
+				()-> lancamentoService.deletar(lancamentoASalvar),
+				NullPointerException.class);
+		
+		
+		
+	}
+	
 	private Lancamento criarLancamento(Usuario usuario) {
 		return Lancamento.builder()
 				.descricao("Lancamento de teste")
