@@ -1,6 +1,5 @@
 package com.jeanpereira.minhasfinancas.service;
 
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
