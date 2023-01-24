@@ -152,6 +152,22 @@ class LancamentoServiceTest {
 			
 	}
 	
+	@Test
+	public void deveAtualizarStatusLancamento() {
+		Usuario usuarioASalvar = criarUsuario();
+		Usuario usuario = usuarioService.salvarUsuario(usuarioASalvar);
+		
+		Lancamento lancamentoASalvar = criarLancamento(usuario);
+		Lancamento lancamentoSalvo = lancamentoService.salvar(lancamentoASalvar);
+		
+		lancamentoService.atualizarStatus(lancamentoSalvo, StatusLancamento.CANCELADO);
+		
+		Optional<Lancamento> lancamentoAtualizado = lancamentoService.obterPorId(lancamentoSalvo.getId());
+		
+		Assertions.assertThat(lancamentoAtualizado.get().getStatus())
+			.isEqualTo(StatusLancamento.CANCELADO);
+	}
+	
 	private Lancamento criarLancamento(Usuario usuario) {
 		return Lancamento.builder()
 				.descricao("Lancamento de teste")
