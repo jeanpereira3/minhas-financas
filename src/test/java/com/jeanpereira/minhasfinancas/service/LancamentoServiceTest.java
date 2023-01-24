@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
@@ -117,8 +118,7 @@ class LancamentoServiceTest {
 		Optional<Lancamento> lancamentoDeletado = lancamentoService.obterPorId(lancamentoSalvo.getId());
 		
 		Assertions.assertThat(lancamentoDeletado).isEmpty();
-		
-		
+			
 	}
 	
 	@Test
@@ -135,12 +135,29 @@ class LancamentoServiceTest {
 		
 	}
 	
+	@Test
+	public void deveFiltrarLancamentos() {
+		Usuario usuarioASalvar = criarUsuario();
+		Usuario usuario = usuarioService.salvarUsuario(usuarioASalvar);
+		
+		Lancamento lancamentoASalvar = criarLancamento(usuario);
+		Lancamento lancamentoSalvo = lancamentoService.salvar(lancamentoASalvar);
+		
+		List<Lancamento> lancamentos = lancamentoService.buscar(lancamentoSalvo);
+		
+		Assertions.assertThat(lancamentos)
+			.isNotEmpty()
+			.hasSize(1)
+			.contains(lancamentoSalvo);
+			
+	}
+	
 	private Lancamento criarLancamento(Usuario usuario) {
 		return Lancamento.builder()
 				.descricao("Lancamento de teste")
 				.mes(1)
 				.ano(2025)
-				.valor(BigDecimal.valueOf(300))
+				.valor(BigDecimal.valueOf(300.99))
 				.dataCadastro(LocalDate.now())
 				.usuario(usuario)
 				.tipo(TipoLancamento.RECEITA)
