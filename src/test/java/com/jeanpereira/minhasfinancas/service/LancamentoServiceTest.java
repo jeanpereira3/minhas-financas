@@ -63,10 +63,46 @@ class LancamentoServiceTest {
 		Assertions.assertThat(lancamento.get().getId()).isEqualTo(lancamentoSalvo.getId());
 	}
 	
-//	@Test
-//	public void naoDeveSalvarUmLancamentoQuandoOuverErroDeValidacao() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	public void naoDeveSalvarUmLancamentoQuandoOuverErroDeValidacao() {	
+		Exception exception = null;
+		
+		try {
+			Lancamento lancamentoASalvar = criarLancamento(null);
+			Lancamento lancamentoSalvo = lancamentoService.salvar(lancamentoASalvar);
+		} catch (Exception e) {
+			exception = e;
+		}
+		
+		Assertions.assertThat(exception.getMessage()).isEqualTo("Informe um Usuário.");
+		
+	}
+	
+	@Test
+	public void deveAtualizarUmLancamento() {	
+		Usuario usuarioASalvar = criarUsuario();
+		Usuario usuario = usuarioService.salvarUsuario(usuarioASalvar);
+		
+		Lancamento lancamentoASalvar = criarLancamento(usuario);
+		Lancamento lancamentoSalvo = lancamentoService.salvar(lancamentoASalvar);
+		
+		lancamentoSalvo.setDescricao("Lancamento atualizado.");
+		Lancamento lancamentoAtualizado = lancamentoService.atualizar(lancamentoSalvo);
+		
+		Assertions.assertThat(lancamentoAtualizado.getDescricao()).isEqualTo("Lancamento atualizado.");
+		Assertions.assertThat(lancamentoSalvo.getId()).isEqualTo(lancamentoAtualizado.getId());
+		
+	}
+	
+	@Test
+	public void deveGerarErroAoAtualizarLancamentoInexistente() {	
+		Usuario usuarioASalvar = criarUsuario();
+		Usuario usuario = usuarioService.salvarUsuario(usuarioASalvar);
+		
+		Lancamento lancamento = criarLancamento(usuario);
+		
+		Assertions.catchThrowableOfType(() -> lancamentoService.salvar(lancamento), NullPointerException.class);	
+	}
 	
 	private Lancamento criarLancamento(Usuario usuario) {
 		return Lancamento.builder()
