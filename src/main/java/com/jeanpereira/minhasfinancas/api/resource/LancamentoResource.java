@@ -133,6 +133,7 @@ public class LancamentoResource {
 	private LancamentoDTO converter(Lancamento lancamento) {
 		return LancamentoDTO.builder()
 				.id(lancamento.getId())
+				.descricao(lancamento.getDescricao())
 				.mes(lancamento.getMes())
 				.ano(lancamento.getAno())
 				.valor(lancamento.getValor())
