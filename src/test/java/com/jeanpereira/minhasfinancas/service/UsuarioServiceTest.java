@@ -1,20 +1,19 @@
 package com.jeanpereira.minhasfinancas.service;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.jeanpereira.minhasfinancas.model.entity.Usuario;
 import com.jeanpereira.minhasfinancas.model.repository.UsuarioRepository;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 class UsuarioServiceTest {
 	
 	private String nome = "teste";
@@ -58,8 +57,11 @@ class UsuarioServiceTest {
 		} catch (Exception e) {
 			exception = e;
 		}
+		
+		Assertions.assertThat(exception.getMessage())
+		.isEqualTo("Já existe um usuário cadastrado com esse email.");
 			
-		Assert.assertEquals("Já existe um usuário cadastrado com esse email.", exception.getMessage());		
+	
 	}
 	
 	@Test
@@ -72,7 +74,9 @@ class UsuarioServiceTest {
 			exception = e;
 		}
 		
-		Assert.assertEquals("Usuario não encontrado.", exception.getMessage());
+		Assertions.assertThat(exception.getMessage())
+		.isEqualTo("Usuario não encontrado.");
+		
 		
 	}
 	
@@ -87,7 +91,9 @@ class UsuarioServiceTest {
 			exception = e;
 		}
 		
-		Assert.assertEquals("Senha inválida.", exception.getMessage());
+		Assertions.assertThat(exception.getMessage())
+		.isEqualTo("Senha inválida.");
+		
 		
 	}
 	
@@ -113,7 +119,9 @@ class UsuarioServiceTest {
 			exception = e;
 		}
 		
-		Assert.assertEquals("Já existe um usuário cadastrado com esse email.", exception.getMessage());
+		Assertions.assertThat(exception.getMessage())
+		.isEqualTo("Já existe um usuário cadastrado com esse email.");
+		
 	}
 	
 	@Test
@@ -121,9 +129,16 @@ class UsuarioServiceTest {
 		Usuario usuario = Usuario.builder().nome(nome).email(email).senha(senha).build();
 		Usuario usuarioSalvo = service.salvarUsuario(usuario);
 		
-		Assert.assertEquals(nome, usuarioSalvo.getNome());
-		Assert.assertEquals(email, usuarioSalvo.getEmail());
-		Assert.assertEquals(senha, usuarioSalvo.getSenha());    
+		Assertions.assertThat(usuarioSalvo.getNome())
+		.isEqualTo(nome);
+		
+		Assertions.assertThat(usuarioSalvo.getEmail())
+		.isEqualTo(email);
+		
+		Assertions.assertThat(usuarioSalvo.getSenha())
+		.isEqualTo(senha);
+		
+  
 	}
 	
 	private void buildUsuario(){
