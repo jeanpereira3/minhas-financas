@@ -3,6 +3,7 @@ package com.jeanpereira.minhasfinancas.service.impl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +18,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 	
 	@Autowired
 	private UsuarioRepository repository;
+	
+	private PasswordEncoder encoder;
 
-	public UsuarioServiceImpl(UsuarioRepository repository) {
+	public UsuarioServiceImpl(UsuarioRepository repository, PasswordEncoder encoder) {
 		super();
 		this.repository = repository;
+		this.encoder = encoder;
 	}
 
 	@Override
@@ -29,7 +33,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 		if(!usuario.isPresent()) {
 			throw new ErroDeAutenticacaoExeption("Usuario não encontrado.");
 		}
-		if (!usuario.get().getSenha().equals(senha)) {
+		
+		boolean senhasBatem = encoder.matches(senha, usuario.get().getSenha());
+		
+		if (!senhasBatem) {
 			throw new ErroDeAutenticacaoExeption("Senha inválida.");
 		}
 		
@@ -40,7 +47,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Transactional
 	public Usuario salvarUsuario(Usuario usuario) {
 		validarEmail(usuario.getEmail());
+		
+		criptografarSenha(usuario);
+		
 		return repository.save(usuario);
+	}
+
+	private void criptografarSenha(Usuario usuario) {
+		String senha = usuario.getSenha();
+		String senhaCodificada = encoder.encode(senha);
+		usuario.setSenha(senhaCodificada);
 	}
 
 	@Override
